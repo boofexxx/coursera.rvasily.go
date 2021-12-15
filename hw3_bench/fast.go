@@ -29,22 +29,17 @@ func FastSearch(out io.Writer) {
 	if err != nil {
 		panic(err)
 	}
-
 	var seenBrowsers [][]byte
 	uniqueBrowsers := 0
 	foundUsers := make([]string, 0, 256)
-
 	scanner := bufio.NewScanner(file)
 	var p fastjson.Parser
-	i := 0
-	for scanner.Scan() {
-		i++
+	for i := 0; scanner.Scan(); i++ {
 		text := scanner.Bytes()
 		user, err := p.ParseBytes(text)
 		if err != nil {
 			panic(err)
 		}
-
 		isAndroid := false
 		isMSIE := false
 		browsers := user.GetArray("browsers")
@@ -52,7 +47,6 @@ func FastSearch(out io.Writer) {
 			// log.Println("cant cast browsers")
 			continue
 		}
-
 		for _, browserRaw := range browsers {
 			browser, err := browserRaw.StringBytes()
 			if err != nil {
@@ -92,16 +86,13 @@ func FastSearch(out io.Writer) {
 				}
 			}
 		}
-
 		if !(isAndroid && isMSIE) {
 			continue
 		}
-
 		// log.Println("Android and MSIE user:", user["name"], user["email"])
 		email := strings.Replace(string(user.GetStringBytes("email")), "@", " [at] ", -1)
-		foundUsers = append(foundUsers, fmt.Sprintf("[%d] %s <%s>\n", i-1, string(user.GetStringBytes("name")), email))
+		foundUsers = append(foundUsers, fmt.Sprintf("[%d] %s <%s>\n", i, string(user.GetStringBytes("name")), email))
 	}
-
 	fmt.Fprintln(out, "found users:")
 	for _, user := range foundUsers {
 		fmt.Fprint(out, user)
