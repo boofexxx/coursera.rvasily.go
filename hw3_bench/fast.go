@@ -32,7 +32,7 @@ func FastSearch(out io.Writer) {
 
 	var seenBrowsers [][]byte
 	uniqueBrowsers := 0
-	foundUsers := ""
+	foundUsers := make([]string, 256)
 
 	scanner := bufio.NewScanner(file)
 	var p fastjson.Parser
@@ -98,11 +98,13 @@ func FastSearch(out io.Writer) {
 		}
 
 		// log.Println("Android and MSIE user:", user["name"], user["email"])
-		// I think we could replace it to bytes either. but I don't really think it would reduce number of allocations 
 		email := strings.Replace(string(user.GetStringBytes("email")), "@", " [at] ", -1)
-		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i-1, string(user.GetStringBytes("name")), email)
+		foundUsers = append(foundUsers, fmt.Sprintf("[%d] %s <%s>\n", i-1, string(user.GetStringBytes("name")), email))
 	}
 
-	fmt.Fprintln(out, "found users:\n"+foundUsers)
-	fmt.Fprintln(out, "Total unique browsers", len(seenBrowsers))
+	fmt.Fprintln(out, "found users:")
+	for _, user := range foundUsers {
+		fmt.Fprint(out, user)
+	}
+	fmt.Fprintln(out, "\nTotal unique browsers", len(seenBrowsers))
 }
