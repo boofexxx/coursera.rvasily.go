@@ -1,0 +1,9 @@
+go test -bench=. -benchmem
+GOGC=off go test -run=none -bench=BenchmarkFast -cpuprofile=cpu.out .
+go tool pprof --text hw3_bench.test cpu.out
+go tool pprof --list=FUNCTIONNAME hw3_bench.test cpu.out
+
+go tool pprof -svg ./hw3_bench.test ./cpu.out > cpu.svg
+
+go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
+go tool pprof -inuse_space http://localhost:6060/debug/pprof/heap
