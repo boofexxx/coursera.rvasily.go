@@ -32,7 +32,7 @@ func FastSearch(out io.Writer) {
 
 	var seenBrowsers [][]byte
 	uniqueBrowsers := 0
-	foundUsers := make([]string, 256)
+	foundUsers := make([]string, 0, 256)
 
 	scanner := bufio.NewScanner(file)
 	var p fastjson.Parser
