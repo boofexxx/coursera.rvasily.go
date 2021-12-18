@@ -1,18 +1,46 @@
-go test -bench=. -benchmem
+    go test -bench=. -benchmem
 
-GOGC=off go test -run=none -bench=BenchmarkFast -cpuprofile=cpu.out .
+    GOGC=off go test -run=none -bench=BenchmarkFast -cpuprofile=cpu.out .
 
-go tool pprof --text hw3_bench.test cpu.out
-go tool pprof --list=regexp hw3_bench.test cpu.out
+    go tool pprof --text hw3_bench.test cpu.out
+    go tool pprof --list=regexp hw3_bench.test cpu.out
 
-we also can -png and I suppose there are others options
-go tool pprof -svg hw3_bench.test cpu.out > cpu.svg
+    we also can -png and I suppose there are others options
+    go tool pprof -svg hw3_bench.test cpu.out > cpu.svg
 
-go tool pprof -seconds 5 http://localhost:9090/debug/pprof/profile
-go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
-go tool pprof -alloc_objects http://localhost:6060/debug/pprof/heap
-go tool pprof -inuse_space http://localhost:6060/debug/pprof/heap
-    top10
-    top10 -cum
-    list/disasm regexp
-    png/svg
+    go tool pprof -seconds 5 http://localhost:9090/debug/pprof/profile
+    go tool pprof -alloc_space http://localhost:6060/debug/pprof/heap
+    go tool pprof -alloc_objects http://localhost:6060/debug/pprof/heap
+    go tool pprof -inuse_space http://localhost:6060/debug/pprof/heap
+        top10
+        top10 -cum
+        list/disasm regexp
+        png/svg
+
+--------------------------------------------------------------------------------
+Here’s how you test, build, and install Go binaries with the race detector enabled:
+    go test -race
+    go build -race
+    go install -race
+
+--------------------------------------------------------------------------------
+    go build -gcflags=-m .
+
+COVERAGE
+--------------------------------------------------------------------------------
+    go test -cover
+    go test -countmode=set -coverprofile=coverage.out
+    go tool cover -func=coverage.out
+    go tool cover -html=coverage.out
+
+The go test command accepts a -covermode flag to set the coverage mode to one of three settings:
+    set: did each statement run?
+    count: how many times did each statement run?
+    atomic: like count, but counts precisely in parallel programs
+
+--------------------------------------------------------------------------------
+    go build -gcflags=all="-N -l"
+
+Go 1.10 introduced a new compiler flag -dwarflocationlists. The flag causes the compiler to add location lists that helps debuggers work with optimized binaries
+    go build -gcflags="-dwarflocationlists=true"
+
